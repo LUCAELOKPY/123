@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منظومة الحسابات الذكية - تحليلات الأجهزة المتقدمة</title>
+    <style>
+        :root {
+            --bg-color: #f7fafc;
+            --card-bg: #ffffff;
+            --text-main: #2d3748;
+            --primary-dark: #1a202c;
+            --playstation-color: #3182ce;
+            --orders-color: #dd6b20;
+            --computer-color: #319795;
+            --deductions-color: #e53e3e;
+            --net-color: #38a169;
+            --purple-gradient: linear-gradient(135deg, #6b46c1, #4c51bf);
+            --dark-blue-gradient: linear-gradient(135deg, #2b6cb0, #1a365d);
+            --teal-gradient: linear-gradient(135deg, #2c7a7b, #234e52);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1350px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary-dark);
+            margin-bottom: 30px;
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        /* لوحة أدوات التحكم والرفع */
+        .control-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 35px;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #718096;
+        }
+
+        input[type="file"], input[type="month"] {
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            background: #fff;
+            font-size: 14px;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        button {
+            padding: 11px 24px;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-process { background-color: #4a5568; }
+        .btn-process:hover { background-color: #2d3748; }
+        .btn-export { background-color: #2f855a; display: none; }
+        .btn-export:hover { background-color: #22543d; }
+        
+        .status-message {
+            font-weight: 600;
+            margin-right: auto;
+            font-size: 14px;
+        }
+
+        /* شاشة لوحة التحكم الرئيسية (Financial Dashboard) */
+        .dashboard-wrapper {
+            display: none; 
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.04);
+            margin-bottom: 40px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .dashboard-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--primary-dark);
+            border-bottom: 2px dashed #edf2f7;
+            padding-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-card {
+            padding: 22px;
+            border-radius: 12px;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        .metric-card h3 {
+            margin: 0 0 12px 0;
+            font-size: 15px;
+            font-weight: 600;
+            opacity: 0.95;
+            letter-spacing: 0.3px;
+        }
+
+        .metric-card .num-val {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        /* خصائص وتكبير خط المبالغ والمحددات والأجهزة */
+        .metric-card .top-title-text {
+            font-size: 34px; /* حجم خط اسم الجهاز كبير وواضح جداً */
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            word-wrap: break-word;
+            color: #ffffff;
+        }
+
+        .metric-card .top-amount-badge {
+            font-size: 40px; /* حجم خط المبلغ مكبر وضخم */
+            font-weight: 900;
+            display: block;
+            margin-top: 5px;
+            background: rgba(255, 255, 255, 0.18);
+            padding: 6px 12px;
+            border-radius: 8px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-card .sub-text-label {
+            font-size: 13px;
+            opacity: 0.9;
+            font-weight: 600;
+        }
+
+        .card-ps { background: linear-gradient(135deg, #3182ce, #2b6cb0); }
+        .card-orders { background: linear-gradient(135deg, #dd6b20, #c05621); }
+        .card-comp { background: linear-gradient(135deg, #319795, #2c7a7b); }
+        .card-ded { background: linear-gradient(135deg, #e53e3e, #9b2c2c); }
+        
+        /* كروت التحليلات المتقدمة */
+        .card-top-cashier { background: var(--purple-gradient); }
+        .card-top-ps { background: var(--dark-blue-gradient); }
+        .card-top-comp { background: var(--teal-gradient); }
+
+        .net-box-full {
+            grid-column: 1 / -1;
+            background: #edf2f7;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border: 1px solid #cbd5e0;
+        }
+
+        .net-box-item { text-align: center; }
+        .net-box-item div:first-child { font-size: 13px; color: #4a5568; font-weight: 600; }
+        .net-box-item div:last-child { font-size: 24px; font-weight: 700; margin-top: 5px; }
+
+        /* منطقة أزرار استعراض التقارير المنبثقة */
+        .reports-buttons-area {
+            display: none;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .btn-view-report {
+            background-color: #2b6cb0;
+            font-size: 15px;
+            padding: 14px 30px;
+            box-shadow: 0 4px 6px rgba(43, 108, 176, 0.2);
+        }
+        .btn-view-report:hover { background-color: #1a365d; }
+
+        /* الشاشات المنبثقة الذكية (Modal System) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #fff;
+            width: 100%;
+            max-width: 950px;
+            max-height: 85vh;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            overflow-y: auto;
+            padding: 25px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .btn-close-modal {
+            background-color: #e53e3e;
+            padding: 6px 16px;
+            font-size: 13px;
+        }
+        .btn-close-modal:hover { background-color: #c53030; }
+
+        /* جداول البيانات */
+        .table-container {
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #edf2f7;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        th, td { padding: 12px 14px; font-size: 14px; }
+        th { background-color: var(--primary-dark); color: #fff; font-weight: 600; }
+        td { border-bottom: 1px solid #edf2f7; color: #4a5568; }
+        tr:nth-child(even) { background-color: #f7fafc; }
+        tr:hover { background-color: #edf2f7; }
+
+        .text-success { color: var(--net-color); font-weight: 700; }
+        .text-danger { color: var(--deductions-color); font-weight: 700; }
+        .text-bold { font-weight: 700; color: #1a202c; }
+        .total-row { background-color: #e2e8f0 !important; font-weight: 700; color: #1a202c; }
+
+        @media print {
+            body { background: #fff; padding: 0; }
+            #controls, .reports-buttons-area, .btn-close-modal { display: none !important; }
+            .modal-overlay { position: relative; display: block !important; background: none; backdrop-filter: none; z-index: auto; padding: 0; }
+            .modal-content { max-height: none; overflow: visible; box-shadow: none; padding: 0; }
+            .dashboard-wrapper { display: block !important; }
+            .metric-card .top-amount-badge { border: 1px solid rgba(0,0,0,0.15); background: none; color: #000; }
+            .table-container { page-break-inside: auto; margin-top: 20px; }
+            tr { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>منظومة الحسابات الإدارية الموحدة وتحليلات الأداء المتقدمة</h2>
+    
+    <div class="control-panel" id="controls">
+        <div class="control-group">
+            <label for="fileInput">ملف التقرير المالي (HTML):</label>
+            <input type="file" id="fileInput" accept=".html,.htm">
+        </div>
+        <div class="control-group">
+            <label for="monthInput">الشهر المحاسبي المستهدف:</label>
+            <input type="month" id="monthInput" value="2026-05">
+        </div>
+        <button class="btn-process" onclick="processReport()">دخول لوحة التحكم وقراءة الملف</button>
+        <button class="btn-export" id="exportBtn" onclick="exportToPDF()">تصدير كافة البيانات لـ PDF</button>
+        <div id="status" class="status-message"></div>
+    </div>
+
+    <div class="dashboard-wrapper" id="dashboardScreen">
+        <div class="dashboard-title">
+            <span>🖥️ شاشة لوحة تحكم قنوات الدخل وتحليلات الأجهزة للشهر</span>
+            <span id="selectedMonthTitle" style="font-size:15px; color:#4a5568;"></span>
+        </div>
+        
+        <div class="dashboard-grid" style="margin-bottom: 25px;">
+            <div class="metric-card card-ps">
+                <h3>إجمالي إيرادات البلايستيشن</h3>
+                <div class="num-val" id="dashPs">0.00</div>
+            </div>
+            <div class="metric-card card-orders">
+                <h3>إجمالي إيرادات الطلب (الكافيه)</h3>
+                <div class="num-val" id="dashOrders">0.00</div>
+            </div>
+            <div class="metric-card card-comp">
+                <h3>إجمالي إيرادات الكومبيوتر</h3>
+                <div class="num-val" id="dashComp">0.00</div>
+            </div>
+            <div class="metric-card card-ded">
+                <h3>إجمالي قيمة الحسومات</h3>
+                <div class="num-val" id="dashDed">0.00</div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="metric-card card-top-cashier">
+                <h3>🏆 أعلى وردية (صرّاف) مبيعاً</h3>
+                <div class="top-title-text" id="topCashierName">-</div>
+                <div class="sub-text-label">إجمالي مبيعات الوردية الكلي:</div>
+                <div class="top-amount-badge" id="topCashierAmount">0.00</div>
+            </div>
+            <div class="metric-card card-top-ps">
+                <h3>🎮 أعلى استخدام بلايستيشن (من التعليق)</h3>
+                <div class="top-title-text" id="topPsDevice">-</div>
+                <div class="sub-text-label">إجمالي إيرادات الجهاز بالشهر:</div>
+                <div class="top-amount-badge" id="topPsAmount">0.00</div>
+            </div>
+            <div class="metric-card card-top-comp">
+                <h3>💻 أعلى استخدام كومبيوتر (من التعليق)</h3>
+                <div class="top-title-text" id="topCompDevice">-</div>
+                <div class="sub-text-label">إجمالي إيرادات الجهاز بالشهر:</div>
+                <div class="top-amount-badge" id="topCompAmount">0.00</div>
+            </div>
+        </div>
+        
+        <div class="net-box-full">
+            <div class="net-box-item">
+                <div>إجمالي الإيرادات الكلي</div>
+                <div style="color: #2b6cb0;" id="dashTotalRev">0.00</div>
+            </div>
+            <div class="net-box-item" style="border-right: 2px solid #cbd5e0; padding-right: 40px; border-left: 2px solid #cbd5e0; padding-left: 40px;">
+                <div>صافي الأرباح النهائية (الإيرادات - الحسومات)</div>
+                <div style="color: #2f855a;" id="dashNet">0.00</div>
+            </div>
+            <div class="net-box-item">
+                <div>كفاءة التشغيل (نسبة الخصم الكلية)</div>
+                <div style="color: #6b46c1;" id="dashRatio">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="reports-buttons-area" id="reportsButtonsArea">
+        <button class="btn-view-report" onclick="openModal('summaryModal')">📊 أولاً: جدول ملخص الأرباح الصافية اليومية</button>
+        <button class="btn-view-report" style="background-color: #4a5568;" onclick="openModal('shiftsModal')">👥 ثانياً: بيان أداء ومبيعات الورديات تفصيلياً</button>
+    </div>
+
+    <div class="modal-overlay" id="summaryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📊 كشف ملخص الأرباح الصافية اليومية للشهر بالكامل</div>
+                <button class="btn-close-modal" onclick="closeModal('summaryModal')">إغلاق ✕</button>
+            </div>
+            <div class="table-container">
+                <table id="resultTable">
+                    <thead>
+                        <tr>
+                            <th>التاريخ المحاسبي</th>
+                            <th>إيرادات الأقسام المجمعة</th>
+                            <th>الحسومات اليومية</th>
+                            <th>صافي الأرباح اليومية</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="shiftsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">👥 كشف أداء ومبيعات الورديات (الصرّاف) تفصيلياً لكل يوم</div>
+                <button class="btn-close-modal" onclick="closeModal('shiftsModal')">إغلاق ✕</button>
+            </div>
+            <div class="table-container">
+                <table id="shiftsTable">
+                    <thead>
+                        <tr>
+                            <th>التاريخ المحاسبي</th>
+                            <th>الصرّاف (الوردية)</th>
+                            <th>إيرادات الوردية</th>
+                            <th>حسومات الوردية</th>
+                            <th>صافي الوردية</th>
+                        </tr>
+                    </thead>
+                    <tbody id="shiftsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openModal(modalId) {
+    document.getElementById(modalId).style.display = "flex";
+    document.body.style.overflow = "hidden";
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = "none";
+    document.body.style.overflow = "auto";
+}
+
+function processReport() {
+    const fileInput = document.getElementById('fileInput');
+    const monthInput = document.getElementById('monthInput').value;
+    const statusDiv = document.getElementById('status');
+    const tableBody = document.getElementById('tableBody');
+    const shiftsTableBody = document.getElementById('shiftsTableBody');
+
+    if (!fileInput.files[0]) {
+        statusDiv.innerHTML = "<span class='text-danger'>الرجاء اختيار ملف التقرير أولاً!</span>";
+        return;
+    }
+
+    statusDiv.innerText = "جاري تجميع حركات وحذف الكلمات الزائدة وتحليل الأجهزة...";
+    
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const text = e.target.result;
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+        const rows = doc.querySelectorAll('tr');
+        
+        const dailyData = {};
+        const [targetYear, targetMonth] = monthInput.split('-');
+
+        let mTotalPs = 0, mTotalOrders = 0, mTotalComp = 0, mTotalDed = 0;
+        
+        const cashierTotals = {};
+        const psDeviceTotals = {};
+        const compDeviceTotals = {};
+
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td, th');
+            if (cells.length < 7) return; 
+
+            // تصفية وحذف كلمة "كاش" من اسم الصراف
+            let cashier = cells[0].innerText.replace(/كاش/g, '').trim();
+            const dateStr = cells[1].innerText.trim();
+            
+            // قراءة وتحديد اسم الجهاز/الغرفة من عمود التعليق مباشرةً وحذف كلمة "كاش" منه
+            let commentStr = cells[3].innerText.replace(/كاش/g, '').trim(); 
+            
+            const transactionType = cells[4].innerText.trim(); 
+            let amount = parseFloat(cells[5].innerText.trim().replace(/[^\d.-]/g, ''));
+
+            if (isNaN(amount) || cashier === "الصرّاف" || cashier === "") return;
+
+            const dateTimeParts = dateStr.split(' ');
+            if (dateTimeParts.length < 2) return;
+
+            const dateParts = dateTimeParts[0].split(/[\.\-\/]/);
+            const timeParts = dateTimeParts[1].split(':');
+
+            if (dateParts.length < 3 || timeParts.length < 2) return;
+
+            let day, month, year;
+            if (dateParts[0].length === 4) {
+                [year, month, day] = dateParts.map(Number);
+            } else {
+                [day, month, year] = dateParts.map(Number);
+            }
+            
+            const hour = parseInt(timeParts[0]);
+
+            // تطبيق قاعدة اليوم المحاسبي (7 صباحاً)
+            let calcDate = new Date(year, month - 1, day);
+            if (hour < 7) {
+                calcDate.setDate(calcDate.getDate() - 1);
+            }
+
+            const calcYear = calcDate.getFullYear();
+            const calcMonth = String(calcDate.getMonth() + 1).padStart(2, '0');
+            const calcDay = String(calcDate.getDate()).padStart(2, '0');
+            const finalKey = `${calcYear}-${calcMonth}-${calcDay}`;
+
+            if (calcYear !== parseInt(targetYear) || calcMonth !== targetMonth) return; 
+
+            if (!dailyData[finalKey]) {
+                dailyData[finalKey] = { revenues: 0, deductions: 0, shifts: {} };
+            }
+            if (!dailyData[finalKey].shifts[cashier]) {
+                dailyData[finalKey].shifts[cashier] = { revenues: 0, deductions: 0 };
+            }
+
+            // الفرز المالي التراكمي وتجميع حسابات الأجهزة بناءً على عمود التعليق
+            if (transactionType.includes("إيرادات البلايستيشن")) {
+                mTotalPs += amount;
+                dailyData[finalKey].revenues += amount;
+                dailyData[finalKey].shifts[cashier].revenues += amount;
+                
+                cashierTotals[cashier] = (cashierTotals[cashier] || 0) + amount;
+                if(commentStr && commentStr !== "") {
+                    psDeviceTotals[commentStr] = (psDeviceTotals[commentStr] || 0) + amount;
+                }
+
+            } else if (transactionType.includes("إيرادات الطلب")) {
+                mTotalOrders += amount;
+                dailyData[finalKey].revenues += amount;
+                dailyData[finalKey].shifts[cashier].revenues += amount;
+                
+                cashierTotals[cashier] = (cashierTotals[cashier] || 0) + amount;
+
+            } else if (transactionType.includes("إيرادات الكومبيوتر")) {
+                mTotalComp += amount;
+                dailyData[finalKey].revenues += amount;
+                dailyData[finalKey].shifts[cashier].revenues += amount;
+                
+                cashierTotals[cashier] = (cashierTotals[cashier] || 0) + amount;
+                if(commentStr && commentStr !== "") {
+                    compDeviceTotals[commentStr] = (compDeviceTotals[commentStr] || 0) + amount;
+                }
+
+            } else if (transactionType.includes("الحسومات")) {
+                mTotalDed += amount;
+                dailyData[finalKey].deductions += amount;
+                dailyData[finalKey].shifts[cashier].deductions += amount;
+            }
+        });
+
+        // المقارنة البرمجية لاستخراج محقق أعلى إيراد بناء على عمود التعليق المجمع طوال الشهر
+        let topCashier = "لا يوجد بيانات", topCashierAmt = 0;
+        for (let cash in cashierTotals) {
+            if (cashierTotals[cash] > topCashierAmt) {
+                topCashierAmt = cashierTotals[cash];
+                topCashier = cash;
+            }
+        }
+
+        let topPs = "لا يوجد بيانات", topPsAmt = 0;
+        for (let device in psDeviceTotals) {
+            if (psDeviceTotals[device] > topPsAmt) {
+                topPsAmt = psDeviceTotals[device];
+                topPs = device;
+            }
+        }
+
+        let topComp = "لا يوجد بيانات", topCompAmt = 0;
+        for (let device in compDeviceTotals) {
+            if (compDeviceTotals[device] > topCompAmt) {
+                topCompAmt = compDeviceTotals[device];
+                topComp = device;
+            }
+        }
+
+        // حقن النتائج المحدثة في الكروت المكبرة لتعمل بشكل ديناميكي تلقائي
+        document.getElementById('topCashierName').innerText = topCashier;
+        document.getElementById('topCashierAmount').innerText = topCashierAmt.toFixed(2);
+        
+        document.getElementById('topPsDevice').innerText = topPs;
+        document.getElementById('topPsAmount').innerText = topPsAmt.toFixed(2);
+        
+        document.getElementById('topCompDevice').innerText = topComp;
+        document.getElementById('topCompAmount').innerText = topCompAmt.toFixed(2);
+
+        // المجموعات الأساسية للـ Dashboard
+        document.getElementById('dashPs').innerText = mTotalPs.toFixed(2);
+        document.getElementById('dashOrders').innerText = mTotalOrders.toFixed(2);
+        document.getElementById('dashComp').innerText = mTotalComp.toFixed(2);
+        document.getElementById('dashDed').innerText = mTotalDed.toFixed(2);
+        
+        let mTotalRev = mTotalPs + mTotalOrders + mTotalComp;
+        let mTotalNet = mTotalRev - mTotalDed;
+        let mRatio = mTotalRev > 0 ? ((mTotalDed / mTotalRev) * 100).toFixed(1) : 0;
+
+        document.getElementById('dashTotalRev').innerText = mTotalRev.toFixed(2);
+        document.getElementById('dashNet').innerText = mTotalNet.toFixed(2);
+        document.getElementById('dashRatio').innerText = `${mRatio}%`;
+        document.getElementById('selectedMonthTitle').innerText = `الفترة الحسابية المعروضة: ${targetMonth} / ${targetYear}`;
+
+        // تعبئة جدول ملخص اليومية للشهر
+        tableBody.innerHTML = "";
+        const daysInMonth = new Date(targetYear, targetMonth, 0).getDate();
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const currentDayStr = String(d).padStart(2, '0');
+            const dateKey = `${targetYear}-${targetMonth}-${currentDayStr}`;
+            
+            let rev = 0, ded = 0;
+            if (dailyData[dateKey]) {
+                rev = dailyData[dateKey].revenues;
+                ded = dailyData[dateKey].deductions;
+            }
+            let net = rev - ded;
+
+            tableBody.insertAdjacentHTML('beforeend', `
+                <tr>
+                    <td class="text-bold">${currentDayStr}.${targetMonth}.${targetYear}</td>
+                    <td>${rev.toFixed(2)}</td>
+                    <td class="${ded > 0 ? 'text-danger' : ''}">${ded.toFixed(2)}</td>
+                    <td class="${net >= 0 ? 'text-success' : 'text-danger'}">${net.toFixed(2)}</td>
+                </tr>
+            `);
+        }
+
+        tableBody.insertAdjacentHTML('beforeend', `
+            <tr class="total-row">
+                <td>المجموع الإجمالي للشهر</td>
+                <td>${mTotalRev.toFixed(2)}</td>
+                <td class="text-danger">${mTotalDed.toFixed(2)}</td>
+                <td class="${mTotalNet >= 0 ? 'text-success' : 'text-danger'}">${mTotalNet.toFixed(2)}</td>
+            </tr>
+        `);
+
+        // تعبئة مبيعات الورديات
+        shiftsTableBody.innerHTML = "";
+        Object.keys(dailyData).sort().forEach(dateKey => {
+            const [y, m, d] = dateKey.split('-');
+            const formattedDate = `${d}.${m}.${y}`;
+            const shifts = dailyData[dateKey].shifts;
+
+            Object.keys(shifts).forEach(cashierName => {
+                const sRev = shifts[cashierName].revenues;
+                const sDed = shifts[cashierName].deductions;
+                const sNet = sRev - sDed;
+
+                shiftsTableBody.insertAdjacentHTML('beforeend', `
+                    <tr>
+                        <td>${formattedDate}</td>
+                        <td class="text-bold">${cashierName}</td>
+                        <td>${sRev.toFixed(2)}</td>
+                        <td class="${sDed > 0 ? 'text-danger' : ''}">${sDed.toFixed(2)}</td>
+                        <td class="${sNet >= 0 ? 'text-success' : 'text-danger'}">${sNet.toFixed(2)}</td>
+                    </tr>
+                `);
+            });
+        });
+
+        document.getElementById('dashboardScreen').style.display = "block";
+        document.getElementById('reportsButtonsArea').style.display = "flex";
+        document.getElementById('exportBtn').style.display = "inline-block";
+        statusDiv.innerHTML = "<span class='text-success'>تم دمج تحليلات عمود التعليق التراكمية وعرض الأجهزة العليا بنجاح!</span>";
+    };
+
+    reader.readAsText(file);
+}
+
+function exportToPDF() {
+    window.print();
+}
+</script>
+
+</body>
+</html>
