@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOKA CAFE - أداة اختبار لوحات الألعاب</title>
+    <style>
+        /* الألوان والهوية البصرية المطابقة تماماً للمواصفات */
+        :root {
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --accent-blue: #2563eb;
+            --accent-green: #22c55e;
+            --pad-outline: #cbd5e1;
+            --pad-dark-parts: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        /* الهيدر العلوي */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            stroke: var(--accent-blue);
+            fill: none;
+        }
+
+        .brand-text h1 {
+            font-size: 20px;
+            font-weight: 800;
+            color: #020617;
+        }
+
+        .brand-text p {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .header-btn {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .header-btn:hover {
+            background: #f1f5f9;
+        }
+
+        /* العنوان الرئيسي للذراع المتصلة */
+        .controller-title-section {
+            margin-bottom: 20px;
+        }
+
+        .controller-title-section h2 {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .controller-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: bold;
+        }
+
+        /* التوزيع الهيكلي المتوازن */
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .workspace-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* النصف الأيمن: كروت البيانات */
+        .data-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* مصفوفة الكروت العلوية السريعة */
+        .info-cards-strip {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+
+        .info-mini-card {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 4px;
+        }
+
+        .mini-card-lbl {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            display: block;
+            font-weight: 600;
+        }
+
+        .mini-card-val {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* شبكة الأزرار B0 - LOKA */
+        .buttons-values-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+        }
+
+        .btn-val-box {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        /* ألواح عصي التحكم التناظرية */
+        .sticks-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stick-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 18px;
+            background: #ffffff;
+        }
+
+        .stick-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .drift-status-lbl {
+            font-size: 11px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .stick-data-layout {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .axes-logs {
+            font-family: monospace;
+            font-size: 13px;
+            flex: 1;
+        }
+
+        .axis-row {
+            margin-bottom: 10px;
+        }
+
+        .axis-row span {
+            color: var(--text-muted);
+            font-size: 11px;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* الرادارات الدائرية لعصي التحكم */
+        .stick-radar {
+            width: 140px; 
+            height: 140px; 
+            border: 1px solid var(--pad-outline);
+            border-radius: 50%;
+            position: relative;
+            background: radial-gradient(circle, rgba(241,245,249,1) 0%, rgba(255,255,255,1) 70%);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        .stick-radar::before, .stick-radar::after {
+            content: '';
+            position: absolute;
+            background: #cbd5e1;
+        }
+        .stick-radar::before { top: 50%; left: 0; width: 100%; height: 1px; }
+        .stick-radar::after { left: 50%; top: 0; width: 1px; height: 100%; }
+
+        .radar-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: 0.01s linear;
+            box-shadow: 0 0 4px var(--accent-blue);
+        }
+
+        /* ========================================== */
+        /* CSS المضاف حديثاً لمراقبة مشغلات الـ Triggers L2 / R2 */
+        /* ========================================== */
+        .trigger-monitor {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .trigger-box {
+            flex: 1;
+        }
+
+        .trigger-box label {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .trigger-bar {
+            height: 16px;
+            background: #e2e8f0;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .trigger-bar div {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-blue);
+            transition: .05s;
+        }
+
+        /* خيار اختبار دائرية العصا */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* النصف الأيسر: رسم الـ SVG التفاعلي للذراع */
+        .visual-panel {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .dualsense-svg {
+            width: 100%;
+            max-width: 460px;
+            height: auto;
+        }
+
+        /* كلاسات التحكم وتأثيرات الإضاءة والضغط (النيون) */
+        .svg-part { fill: none; stroke: #94a3b8; stroke-width: 1.5; }
+        .svg-btn { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.5; }
+        .svg-stick { fill: #e2e8f0; stroke: #94a3b8; stroke-width: 2; }
+        .svg-stick-center { fill: #94a3b8; transition: all .05s ease; }
+
+        /* تأثيرات الإضاءة المضافة والمحدثة */
+        .svg-btn, .svg-stick, .svg-stick-center {
+            transition: all .05s ease;
+        }
+
+        .pressed {
+            fill: #2563eb !important;
+            stroke: #2563eb !important;
+            filter: drop-shadow(0 0 10px #2563eb);
+        }
+
+        .svg-stick-center.pressed {
+            fill: #2563eb !important;
+            filter: drop-shadow(0 0 12px #2563eb);
+        }
+
+        .active-press {
+            background: #dbeafe !important;
+            border-color: #2563eb !important;
+            box-shadow: 0 0 12px rgba(37,99,235,.35);
+        }
+
+        /* إضاءة نيون للأزرار (Active) */
+        .active {
+            background: #2563eb !important;
+            color: white !important;
+            box-shadow: 0 0 5px #2563eb, 0 0 15px #2563eb, 0 0 30px #2563eb;
+        }
+
+        .trigger-active {
+            background: #2563eb;
+            color: white;
+        }
+
+        /* تنبيهات حالة جودة عصا التحريك (Drift Detection Colors) */
+        .stick-drift-warning {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .stick-perfect {
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        /* شريط الإحصائيات السفلي */
+        .footer-stats-strip {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 30px;
+            padding-top: 16px;
+            text-align: center;
+        }
+
+        .f-stat-box h4 {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .f-stat-box p {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .app-footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <header class="app-header">
+        <div class="brand">
+            <svg class="brand-icon" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M6 12h4M8 10v4M16 11h.01M18 13h.01"/></svg>
+            <div class="brand-text">
+                <h1>LOKA CAFE</h1>
+                <p>أداة اختبار لوحات الألعاب</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="header-btn" onclick="vibrateGamepad()">🌐 اختبار الاهتزاز</button>
+            <button class="header-btn">🌐 اللغة (العربية)</button>
+        </div>
+    </header>
+
+    <div class="controller-title-section">
+        <h2 id="pad-name">برجاء توصيل يد التحكم والضغط على أي زر...</h2>
+        <div class="controller-meta" id="pad-vendor" style="display: none;">البحث عن أجهزة الهاردوير النشطة عبر المتصفح...</div>
+    </div>
+
+    <div class="workspace-grid">
+        
+        <div class="data-panel">
+            
+            <div class="info-cards-strip">
+                <div class="info-mini-card"><span class="mini-card-lbl">الحالة</span><span class="mini-card-val" id="val-status" style="color:var(--text-muted);">مفصول</span></div>
+                <div class="info-mini-card"><span class="mini-card-lbl">مدة التشغيل</span><span class="mini-card-val" id="val-runtime">00:00:00</span></div>
+                <div class="info-mini-card"><span class="mini-card-lbl">نوع الاتصال</span><span class="mini-card-val" id="val-conn">USB</span></div>
+                <div class="info-mini-card"><span class="mini-card-lbl">عدد الأزرار</span><span class="mini-card-val">18</span></div>
+                <div class="info-mini-card"><span class="mini-card-lbl">عدد المحاور</span><span class="mini-card-val">4</span></div>
+                <div class="info-mini-card"><span class="mini-card-lbl">عدد الاهتزازات</span><span class="mini-card-val">2</span></div>
+            </div>
+
+            <div class="buttons-values-grid">
+                <div class="btn-val-box" id="b-log-0"><span>B0</span><p>0.00</p></div>
+                <div class="btn-val-box" id="b-log-1"><span>B1</span><p>0.00</p></div>
+                <div class="btn-val-box" id="b-log-2"><span>B2</span><p>0.00</p></div>
+                <div class="btn-val-box" id="b-log-3"><span>B3</span><p>0.00</p></div>
+                <div class="btn-val-box" id="b-log-4"><span>B4</span><p>0.00</p></div>
+                <div class="btn-val-box" id="b-log-5"><span>B5</span><p>0.00</p></div>
+                <div class="btn-val-box" id="b-log-6"><span>B6</span><p>0.00</p></div>
+                <div class="btn-val-box" id="b-log-7"><span>B7</span><p>0.00</p></div>
+                <div class="btn-val-box" id="b-log-8"><span>B8</span><p>0.00</p></div>
+                <div class="btn-val-box" id="b-log-9"><span>B9</span><p>0.00</p></div>
+                <div class="btn-val-box" id="b-log-10"><span>B10</span><p>0.00</p></div>
+                <div class="btn-val-box" id="b-log-11"><span>B11</span><p>0.00</p></div>
+                <div class="btn-val-box" id="b-log-12"><span>B12</span><p>0.00</p></div>
+                <div class="btn-val-box" id="b-log-13"><span>B13</span><p>0.00</p></div>
+                <div class="btn-val-box" id="b-log-14"><span>B14</span><p>0.00</p></div>
+                <div class="btn-val-box" id="b-log-15"><span>B15</span><p>0.00</p></div>
+            </div>
+
+            <div class="sticks-wrapper">
+                <div class="stick-card">
+                    <div class="stick-title">عصا التحكم اليمنى</div>
+                    <span id="drift-right" class="drift-status-lbl stick-perfect">فحص الانجراف: ممتاز</span>
+                    <div class="stick-data-layout">
+                        <div class="axes-logs">
+                            <div class="axis-row"><span>المحور 2 (X)</span><p id="txt-axis-2">0.00000</p></div>
+                            <div class="axis-row"><span>المحور 3 (Y)</span><p id="txt-axis-3">0.00000</p></div>
+                        </div>
+                        <div class="stick-radar">
+                            <div class="radar-dot" id="radar-dot-r"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stick-card">
+                    <div class="stick-title">عصا التحكم اليسرى</div>
+                    <span id="drift-left" class="drift-status-lbl stick-perfect">فحص الانجراف: ممتاز</span>
+                    <div class="stick-data-layout">
+                        <div class="axes-logs">
+                            <div class="axis-row"><span>المحور 0 (X)</span><p id="txt-axis-0">0.00000</p></div>
+                            <div class="axis-row"><span>المحور 1 (Y)</span><p id="txt-axis-1">0.00000</p></div>
+                        </div>
+                        <div class="stick-radar">
+                            <div class="radar-dot" id="radar-dot-l"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="trigger-monitor">
+                <div class="trigger-box">
+                    <label>L2 (المشغل الأيسر)</label>
+                    <div class="trigger-bar">
+                        <div id="trigger-l2"></div>
+                    </div>
+                </div>
+
+                <div class="trigger-box">
+                    <label>R2 (المشغل الأيمن)</label>
+                    <div class="trigger-bar">
+                        <div id="trigger-r2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toggle-container">
+                <input type="checkbox" id="circularity-check" checked style="width:16px; height:16px;">
+                <label for="circularity-check" style="font-size:13px; font-weight:700;">اختبار دائرية العصا</label>
+            </div>
+
+        </div>
+
+        <div class="visual-panel">
+            <svg class="dualsense-svg" viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
+                <path class="svg-part" d="M 100,100 C 200,80 400,80 500,100 C 560,130 600,340 560,400 C 530,440 480,410 430,340 C 380,280 220,280 170,340 C 120,410 70,440 40,400 C 0,340 40,130 100,100 Z" fill="#ffffff" stroke="#cbd5e1" stroke-width="3"/>
+                <path d="M 180,160 C 250,140 350,140 420,160 C 450,260 430,340 410,360 C 360,300 240,300 190,360 C 170,340 150,260 180,160 Z" fill="#1e293b"/>
+                
+                <path id="svg-btn-4" class="svg-btn" d="M 80,70 C 120,65 170,75 190,90 L 170,100 L 85,85 Z"/> 
+                <path id="svg-btn-5" class="svg-btn" d="M 520,70 C 480,65 430,75 410,90 L 430,100 L 515,85 Z"/> 
+
+                <rect id="svg-btn-17" class="svg-btn" x="210" y="105" width="180" height="80" rx="10"/>
+
+                <circle id="svg-btn-16" class="svg-btn" cx="300" cy="250" r="12"/>
+
+                <rect id="svg-btn-8" class="svg-btn" x="220" y="200" width="22" height="14" rx="4"/>
+
+                <rect id="svg-btn-9" class="svg-btn" x="358" y="200" width="22" height="14" rx="4"/>
+                
+                <path id="svg-btn-12" class="svg-btn" d="M 125,130 L 145,130 L 145,110 L 125,110 Z"/> 
+                <path id="svg-btn-13" class="svg-btn" d="M 125,155 L 145,155 L 145,175 L 125,175 Z"/> 
+                <path id="svg-btn-14" class="svg-btn" d="M 100,142 L 120,142 L 120,162 L 100,162 Z"/> 
+                <path id="svg-btn-15" class="svg-btn" d="M 150,142 L 170,142 L 170,162 L 150,162 Z"/> 
+
+                <circle id="svg-btn-3" class="svg-btn" cx="470" cy="120" r="14"/> <circle id="svg-btn-1" class="svg-btn" cx="505" cy="155" r="14"/> <circle id="svg-btn-0" class="svg-btn" cx="470" cy="190" r="14"/> <circle id="svg-btn-2" class="svg-btn" cx="435" cy="155" r="14"/> <circle class="svg-part" cx="240" cy="270" r="35" fill="#f8fafc"/>
+                <circle id="svg-joystick-l" class="svg-stick" cx="240" cy="270" r="22"/>
+                <circle id="svg-btn-10" class="svg-stick-center" cx="240" cy="270" r="6"/> <circle class="svg-part" cx="360" cy="270" r="35" fill="#f8fafc"/>
+                <circle id="svg-joystick-r" class="svg-stick" cx="360" cy="270" r="22"/>
+                <circle id="svg-btn-11" class="svg-stick-center" cx="360" cy="270" r="6"/> </svg>
+        </div>
+
+    </div>
+
+    <footer class="footer-stats-strip">
+        <div class="f-stat-box"><h4>معدل التحديث</h4><p id="f-hz">0 Hz</p></div>
+        <div class="f-stat-box"><h4>زمن الاستجابة</h4><p id="f-latency">0.00 ms</p></div>
+        <div class="f-stat-box"><h4>أقصى قيمة للمحور</h4><p>1.00</p></div>
+        <div class="f-stat-box"><h4>أدنى قيمة للمحور</h4><p>-1.00</p></div>
+        <div class="f-stat-box"><h4>إصدار البرنامج</h4><p>2.0.0</p></div>
+        <div class="f-stat-box"><h4>زمن الاتصال</h4><p id="f-conntime">00:00:00</p></div>
+    </footer>
+
+    <div class="app-footer-note">LOKA CAFE - أداة اختبار لوحات الألعاب © 2026 جميع الحقوق محفوظة</div>
+</div>
+
+<script>
+    let startTime = Date.now();
+    let frameCounter = 0;
+    let lastFPSUpdate = performance.now();
+
+    // دالة تحليل انجراف الأنالوج الاحترافية (Stick Drift Detection)
+    function driftCheck(x, y) {
+        if (Math.abs(x) > 0.05 || Math.abs(y) > 0.05) {
+            return { text: "تحذير: تم رصد انجراف (Drift)", class: "stick-drift-warning" };
+        }
+        return { text: "حالة السنتر: ممتازة (Normal)", class: "stick-perfect" };
+    }
+
+    // الدورة البرمجية التكرارية المحدثة لمعالجة الإشارات اللحظية للذراع
+    function processGamepadFrame() {
+        const gp = navigator.getGamepads()[0];
+
+        if (!gp) {
+            requestAnimationFrame(processGamepadFrame);
+            return;
+        }
+
+        /* 1. حساب معدل التحديث السريع ومؤشر الاستجابة (Polling Rate & Latency) */
+        frameCounter++;
+        const now = performance.now();
+
+        if (now - lastFPSUpdate >= 1000) {
+            document.getElementById("f-hz").innerText = frameCounter + " Hz";
+            document.getElementById("f-latency").innerText = (1000 / frameCounter).toFixed(2) + " ms";
+            frameCounter = 0;
+            lastFPSUpdate = now;
+        }
+
+        /* 2. تتبع ومعالجة إضاءة وحالة الأزرار بالكامل */
+        gp.buttons.forEach((button, index) => {
+            // تحديث مربعات لوحة البيانات الرقمية وتطبيق كلاس التوهج النيون
+            const box = document.getElementById(`b-log-${index}`);
+            if (box) {
+                box.querySelector("p").innerText = button.value.toFixed(2);
+                box.classList.toggle("active-press", button.pressed);
+                box.classList.toggle("active", button.pressed); // تفعيل توهج النيون الأزرق المدمج
+            }
+
+            // تحديث الأزرار الهندسية المطابقة على مجسم الـ SVG
+            const svgBtn = document.getElementById(`svg-btn-${index}`);
+            if (svgBtn) {
+                svgBtn.classList.toggle("pressed", button.pressed);
+            }
+        });
+
+        /* 3. تحديث قراءات ومؤشرات المشغلات الخلفية الـ Triggers (L2 / R2) */
+        document.getElementById("trigger-l2").style.width = (gp.buttons[6].value * 100) + "%";
+        document.getElementById("trigger-r2").style.width = (gp.buttons[7].value * 100) + "%";
+
+        /* 4. معالجة الإشارات التناظرية لعصي التحريك (Analogs & Axes) */
+        const lx = gp.axes[0] || 0;
+        const ly = gp.axes[1] || 0;
+        const rx = gp.axes[2] || 0;
+        const ry = gp.axes[3] || 0;
+
+        document.getElementById("txt-axis-0").innerText = lx.toFixed(5);
+        document.getElementById("txt-axis-1").innerText = ly.toFixed(5);
+        document.getElementById("txt-axis-2").innerText = rx.toFixed(5);
+        document.getElementById("txt-axis-3").innerText = ry.toFixed(5);
+
+        /* 5. تحريك مؤشر النقطة الزرقاء داخل رادارات التتبع الدائرية المكبرة */
+        document.getElementById("radar-dot-l").style.left = `${50 + (lx * 50)}%`;
+        document.getElementById("radar-dot-l").style.top = `${50 + (ly * 50)}%`;
+        document.getElementById("radar-dot-r").style.left = `${50 + (rx * 50)}%`;
+        document.getElementById("radar-dot-r").style.top = `${50 + (ry * 50)}%`;
+
+        /* 6. تحريك مجسم الأنالوج الـ SVG هندسياً بمعدل ضرب ضربي متناسق */
+        document.getElementById("svg-joystick-l").setAttribute("transform", `translate(${lx * 15}, ${ly * 15})`);
+        document.getElementById("svg-joystick-r").setAttribute("transform", `translate(${rx * 15}, ${ry * 15})`);
+
+        /* 7. تتبع تفعيل ضغطات كليكات الـ الأنالوج الداخلية (L3 / R3) على الـ SVG */
+        document.getElementById("svg-btn-10")?.classList.toggle("pressed", gp.buttons[10]?.pressed);
+        document.getElementById("svg-btn-11")?.classList.toggle("pressed", gp.buttons[11]?.pressed);
+        
+        // ربط تفاعلي إضافي لتوهج السنتر
+        document.getElementById("svg-btn-10")?.classList.toggle("active", gp.buttons[10]?.pressed);
+        document.getElementById("svg-btn-11")?.classList.toggle("active", gp.buttons[11]?.pressed);
+
+        /* 8. تتبع وتأكيد ضغطة اللوحة الوسطى الكبيرة TouchPad (B17) */
+        document.getElementById("svg-btn-17")?.classList.toggle("pressed", gp.buttons[17]?.pressed);
+
+        /* 9. تشغيل نظام فحص وتتبع نسب الانجراف وضخ الألوان المناسبة */
+        const leftDriftCheck = driftCheck(lx, ly);
+        const rightDriftCheck = driftCheck(rx, ry);
+
+        const driftLeftEl = document.getElementById("drift-left");
+        const driftRightEl = document.getElementById("drift-right");
+
+        driftLeftEl.innerText = leftDriftCheck.text;
+        driftLeftEl.className = `drift-status-lbl ${leftDriftCheck.class}`;
+
+        driftRightEl.innerText = rightDriftCheck.text;
+        driftRightEl.className = `drift-status-lbl ${rightDriftCheck.class}`;
+
+        /* 10. حساب وتحديث وقت تشغيل الجلسة النشطة بالواجهة */
+        let elapsed = Math.floor((Date.now() - startTime) / 1000);
+        let h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+        let m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+        let s = String(elapsed % 60).padStart(2, '0');
+        document.getElementById("f-conntime").innerText = `${h}:${m}:${s}`;
+
+        requestAnimationFrame(processGamepadFrame);
+    }
+
+    // تفعيل رصد مستمعي قنوات الاتصال والتعرف التلقائي للهاردوير
+    window.addEventListener("gamepadconnected", (e) => {
+        document.getElementById("pad-name").innerText = e.gamepad.id.includes("DualSense") ? "وحدة تحكم لاسلكية DualSense (PS5)" : e.gamepad.id;
+        document.getElementById("val-status").innerText = "متصل";
+        document.getElementById("val-status").style.color = "#22c55e";
+        
+        // إعادة تعيين توقيت الاتصال الجديد
+        startTime = Date.now();
+        requestAnimationFrame(processGamepadFrame);
+    });
+
+    window.addEventListener("gamepaddisconnected", () => {
+        document.getElementById("val-status").innerText = "مفصول";
+        document.getElementById("val-status").style.color = "red";
+        document.getElementById("pad-name").innerText = "برجاء توصيل يد التحكم والضغط على أي زر...";
+    });
+
+    // دالة اختبار واهتزاز مواتير اليد الهيدروليكية
+    function vibrateGamepad() {
+        const gp = navigator.getGamepads()[0];
+        if (gp && gp.vibrationActuator) {
+            gp.vibrationActuator.playEffect("dual-rumble", {
+                duration: 1000,
+                strongMagnitude: 1.0,
+                weakMagnitude: 1.0
+            });
+        } else {
+            alert("محرك الاهتزاز جاهز؛ قم بضغط أي زر على الذراع أولاً لتنشيط الإذن البرمجي للمتصفح.");
+        }
+    }
+</script>
+
+</body>
+</html>
